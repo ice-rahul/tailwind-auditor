@@ -1,6 +1,6 @@
 {
   "name": "tailwind-auditor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A package to analyse tailwind used in the project",
   "main": "src/index.js",
   "scripts": {
