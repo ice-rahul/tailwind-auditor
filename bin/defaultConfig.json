@@ -1,0 +1,4 @@
+{
+  "maxAllowedInlineClass": 4,
+  "filesToAudit": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.mdx"]
+}
