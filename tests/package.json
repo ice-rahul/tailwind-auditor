@@ -1,16 +1,29 @@
 {
-  "name": "tests",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
     "tailwind-auditor": "npx tailwind-auditor"
   },
-  "devDependencies": {
-    "tailwind-auditor": "file:../../tailwind-auditor"
+  "dependencies": {
+    "react": "latest",
+    "react-dom": "latest",
+    "next": "latest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "devDependencies": {
+    "typescript": "latest",
+    "@types/react": "latest",
+    "@types/node": "latest",
+    "@types/react-dom": "latest",
+    "autoprefixer": "latest",
+    "postcss": "latest",
+    "tailwindcss": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "tailwind-auditor": "file:../../tailwind-auditor"
+  }
 }
