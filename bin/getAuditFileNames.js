@@ -19,10 +19,11 @@ async function getAuditFileNames() {
   try {
     ['./.gitignore', './.eslintignore'].forEach((ignorefile) => {
       const ignoreContent = fs.readFileSync(ignorefile, 'utf8');
-      const parsedIgnoredContent = ignoreContent.split('\n').filter((line) => !line.startsWith('#') && line.trim() !== '');
+      const parsedIgnoredContent = ignoreContent.split(getLineEnding(ignoreContent)).filter((line) => !line.startsWith('#') && line.trim() !== '');
       ignorePatterns = [...ignorePatterns, ...parsedIgnoredContent]
     })
-  } catch (err) { }
+  } catch (err) {
+  }
 
   // Use fast glob to get a list of all file names in the folder
   const files = await fg(['./**/*'], { nodir: true, ignore: ignorePatterns });
@@ -37,6 +38,13 @@ async function getAuditFileNames() {
   });
 
   return result
+}
+
+function getLineEnding(source) {
+  var temp = source.indexOf('\n');
+  if (source[temp - 1] === '\r')
+    return '\r\n'
+  return '\n'
 }
 
 module.exports = getAuditFileNames;
