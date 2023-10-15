@@ -22,8 +22,7 @@ async function getAuditFileNames() {
       const parsedIgnoredContent = ignoreContent.split(getLineEnding(ignoreContent)).filter((line) => !line.startsWith('#') && line.trim() !== '');
       ignorePatterns = [...ignorePatterns, ...parsedIgnoredContent]
     })
-  } catch (err) {
-  }
+  } catch (err) { }
 
   // Use fast glob to get a list of all file names in the folder
   const files = await fg(['./**/*'], { nodir: true, ignore: ignorePatterns });
