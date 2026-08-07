@@ -1,4 +1,6 @@
 {
   "maxAllowedInlineClass": 4,
-  "filesToAudit": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.mdx"]
+  "filesToAudit": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.mdx"],
+  "ignoredClasses": [],
+  "reportFile": ""
 }

@@ -1,11 +1,33 @@
 {
   "name": "tailwind-auditor",
-  "version": "1.0.3",
-  "description": "A package to analyse tailwind used in the project",
+  "version": "1.1.0",
+  "description": "Audit a Tailwind CSS project to highlight best practices and over-inflated inline class lists",
   "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "files": [
+    "bin",
+    "src",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "tailwind",
+    "tailwindcss",
+    "audit",
+    "linter",
+    "best-practices",
+    "css"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
   "scripts": {
     "start": "node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test",
+    "lint": "eslint \"bin/**/*.js\" \"src/**/*.js\" \"test/**/*.js\"",
+    "format": "prettier --write \"bin/**/*.js\" \"src/**/*.js\" \"test/**/*.js\"",
+    "format:check": "prettier --check \"bin/**/*.js\" \"src/**/*.js\" \"test/**/*.js\""
   },
   "repository": {
     "type": "git",
@@ -24,5 +46,11 @@
     "commander": "^11.0.0",
     "fast-glob": "^3.3.1",
     "ignore": "^5.2.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "globals": "^17.9.0",
+    "prettier": "^3.9.6"
   }
 }
