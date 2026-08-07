@@ -1,13 +1,19 @@
-# Tailwind Auditor
+# Roadmap
 
-We are trying to build an npm package that can help us audit the project to highlight best practices of tailwind CSS
-
-We aim to create an MVP that should contain the following
+## MVP (done)
 
 - [x] Create an installable npm package
-- [x] Create a script that can be run in the project which can print Hello world
-- [ ] Update script to check for package.json in the project to ensure that the project is using tailwind
-- [ ] Update the script to check for tailwind config files
-- [ ] Update the script the see files for tailwind class names used in the project
-- [ ] Update the script to provide audit suggestions in the command line
-- [ ] Update the script to provide these suggestions in a txt file
+- [x] Create a script that can be run in the project
+- [x] Check for `package.json` to ensure the project is using Tailwind
+- [x] Check for Tailwind config files
+- [x] Scan files for Tailwind class names
+- [x] Provide audit suggestions in the CLI
+- [x] Provide suggestions in a text file
+
+## Ideas for the future
+
+- Validate classes against the project's actual Tailwind config (arbitrary values, theme extensions).
+- Ignore files via comments (e.g. `// tailwind-auditor-ignore`) and inline suppression.
+- HTML report with grouped findings per component.
+- Configurable severity levels and rules beyond `maxAllowedInlineClass`.
+- CI-friendly exit codes for failing audits (e.g. `--fail-on`).

@@ -2,7 +2,7 @@
 
 ### Step 1
 
-Install the package as devDependencies to your project by the following command
+Install the package as a dev dependency in your project:
 
 ```
 npm i tailwind-auditor --save-dev
@@ -10,7 +10,7 @@ npm i tailwind-auditor --save-dev
 
 ### Step 2 (Optional)
 
-Testing the package, You can verify you have tailwind editor installed in your project by the following command
+Verify the installation by checking the version:
 
 ```
 npx tailwind-auditor -v
@@ -19,14 +19,14 @@ npx tailwind-auditor -v
 This should give you a result saying
 
 ```
-Your CLI Tool v1.0.2
+Your CLI Tool v1.1.0
 ```
 
 ### Step 3 (Optional)
 
-Add the script to your project to initialize the package.
+Add a script to your project to initialize the package.
 
-In order to do that, go to package.json of your project. You need to add the following script in your package.json
+In your project's `package.json`, add a script:
 
 ```json
 {
@@ -37,7 +37,7 @@ In order to do that, go to package.json of your project. You need to add the fol
   },
   "devDependencies": {
     ...
-    "tailwind-auditor": X.X.X
+    "tailwind-auditor": "^1.1.0"
   },
   ...
 }
@@ -45,7 +45,7 @@ In order to do that, go to package.json of your project. You need to add the fol
 
 ### Step 4
 
-Now it's time to initialize the project. &#x20;
+Initialize the project.
 
 #### If you completed Step 3
 
@@ -59,33 +59,35 @@ npm run tailwind-auditor
 npx tailwind-auditor init
 ```
 
-Now, you should be able to see a file is generated with the name `tailwind-auditor.json` with the following values
+Now, you should see a file generated with the name `tailwind-auditor.json` with the following values:
 
-```
+```json
 {
   "maxAllowedInlineClass": 4,
-  "filesToAudit": [
-    "**/*.js",
-    "**/*.jsx",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.mdx"
-  ]
+  "filesToAudit": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.mdx"],
+  "ignoredClasses": [],
+  "reportFile": ""
 }
 ```
 
 ### Step 5
 
-Get the list of file that needs to be audited, Verify the filenames if they are correct and we are targetting the correct file
+Audit the project:
 
 ```
 npx tailwind-auditor -a
 ```
 
-should result into
+This checks that Tailwind is present, discovers the files to audit, and reports every element whose
+class count exceeds `maxAllowedInlineClass`:
 
 ```
-Files to audit: src/testComponent.js
-Files to audit: src/testComponent1.js
-etc
+src/pages/index.tsx:12  23/4 inline classes: fixed left-0 top-0 flex w-full justify-center ...
+11 violation(s) across 1 file(s).
+```
+
+To also write the findings to a text report:
+
+```
+npx tailwind-auditor -a --report tailwind-audit-report.txt
 ```

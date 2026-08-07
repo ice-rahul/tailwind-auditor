@@ -1,25 +1,64 @@
-const { CONFIG_FILE_NAME } = require("./constant")
-const fs = require('fs');
-const getFileNames = require('./getAuditFileNames')
+const {
+  loadConfig,
+  getAuditFileNames,
+  auditFiles,
+  formatViolation,
+  writeReport,
+  checkTailwind,
+} = require('../src');
 
-async function audit() {
-  try {
-    // Read the file synchronously
-    const data = fs.readFileSync(CONFIG_FILE_NAME, 'utf8');
-    const configData = JSON.parse(data);
-
-    // Print the list of file names
-    const filteredFiles = await getFileNames()
-    filteredFiles.forEach((file) => {
-      // Files to audit
-      console.log('Files to audit:', file);
-    });
-
-    // Process the file data
-    // console.log('File contents:', configData);
-  } catch (err) {
-    console.error('Error reading the file:', err);
+/**
+ * Run the full audit for the current working directory: preflight Tailwind
+ * checks, config loading, file discovery, analysis, console output, and an
+ * optional text report.
+ *
+ * @param {object} opts
+ * @param {string} [opts.reportPath] Override `config.reportFile`.
+ * @returns {Promise<Array>} The findings produced (listed for the CLI caller).
+ */
+async function audit({ reportPath } = {}) {
+  const { config, exists } = loadConfig();
+  if (!exists) {
+    console.log(
+      `No tailwind-auditor.json found — using defaults. Run \`tailwind-auditor init\` to create one.\n`
+    );
   }
+
+  const preflight = checkTailwind(process.cwd());
+  if (preflight.notes.length) {
+    preflight.notes.forEach((note) => console.log(`WARN  ${note}`));
+    console.log('');
+  }
+
+  const files = await getAuditFileNames({ baseDir: process.cwd(), config });
+  console.log(`Auditing ${files.length} file(s)...\n`);
+
+  const findings = auditFiles(files, config, process.cwd());
+
+  if (!findings.length) {
+    console.log('No issues found.');
+  } else {
+    for (const finding of findings) {
+      if (finding.error) {
+        console.log(`ERROR reading ${finding.file}: ${finding.error}`);
+        continue;
+      }
+      for (const violation of finding.violations) {
+        console.log(formatViolation(finding.file, violation));
+      }
+    }
+
+    const total = findings.reduce((sum, finding) => sum + finding.violations.length, 0);
+    console.log(`${total} violation(s) across ${findings.length} file(s).`);
+  }
+
+  const reportTarget = reportPath || config.reportFile;
+  if (reportTarget) {
+    const written = writeReport(findings, reportTarget);
+    console.log(`Report written to ${written}`);
+  }
+
+  return findings;
 }
 
 module.exports = audit;
