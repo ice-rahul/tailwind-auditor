@@ -3,7 +3,7 @@ const assert = require('node:assert');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { getAuditFileNames, getLineEnding } = require('../src/lib/file');
+const { getAuditFileNames, getLineEnding, expandBraces } = require('../src/lib/file');
 
 function makeProject(files = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ta-files-'));
@@ -59,6 +59,30 @@ test('excludes node_modules and .git even when not listed', async () => {
 
   const files = await getAuditFileNames({ baseDir: dir, config: { filesToAudit: ['**/*.tsx'] } });
   assert.deepStrictEqual(files, ['src/a.tsx']);
+});
+
+test('expandBraces expands a single extension group', () => {
+  assert.deepStrictEqual(expandBraces('**/*.{js,jsx}'), ['**/*.js', '**/*.jsx']);
+});
+
+test('expandBraces expands multiple groups as a cartesian product', () => {
+  assert.deepStrictEqual(expandBraces('{a,b}-{1,2}'), ['a-1', 'a-2', 'b-1', 'b-2']);
+});
+
+test('expandBraces leaves patterns without braces unchanged', () => {
+  assert.deepStrictEqual(expandBraces('**/*.js'), ['**/*.js']);
+});
+
+test('filesToAudit accepts brace-expanded patterns', async () => {
+  const dir = makeProject({
+    'src/a.js': '',
+    'src/b.tsx': '',
+    'src/c.css': '',
+  });
+
+  const config = { filesToAudit: ['**/*.{js,tsx}'] };
+  const files = await getAuditFileNames({ baseDir: dir, config });
+  assert.deepStrictEqual(files.sort(), ['src/a.js', 'src/b.tsx'].sort());
 });
 
 test('getLineEnding detects LF', () => {

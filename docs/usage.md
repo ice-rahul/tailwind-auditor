@@ -31,9 +31,9 @@ npx tailwind-auditor -a
 
 Running the audit does three things:
 
-1. **Pre-flight** — checks that the project uses Tailwind (looks for `tailwindcss` in
-   `package.json` and for a `tailwind.config.{js,cjs,mjs,ts}` file). Missing pieces produce warnings,
-   but the audit still runs.
+1. **Pre-flight** — checks that the project uses Tailwind (looks for `tailwindcss`, `postcss`, and
+   `autoprefixer` in `package.json`, and for a `tailwind.config.{js,cjs,mjs,ts}` file). Missing pieces
+   produce warnings, but the audit still runs.
 2. **Discover files** — finds every file matching `filesToAudit`, respecting your `.gitignore` and
    `.eslintignore`, and always skipping `node_modules` and `.git`.
 3. **Report violations** — prints one line per element whose inline class count exceeds

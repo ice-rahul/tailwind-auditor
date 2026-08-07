@@ -61,6 +61,12 @@ export interface Finding {
 
 /** Result of {@link checkTailwind}. */
 export interface PreflightInfo {
+  /** Presence of each expected Tailwind-related package in package.json. */
+  packages: {
+    tailwindcss: boolean;
+    postcss: boolean;
+    autoprefixer: boolean;
+  };
   /** Whether `tailwindcss` appears in the project's package.json. */
   usingTailwind: boolean;
   /** Detected tailwind config file name, or `null`. */
