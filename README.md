@@ -34,7 +34,8 @@ npx tailwind-auditor init
 npx tailwind-auditor -a
 ```
 
-This pre-flights the project (checks that Tailwind is present), discovers the files to audit, and
+This pre-flights the project (checks that `tailwindcss`, `postcss`, and `autoprefixer` are installed
+and that a tailwind config file exists), discovers the files to audit, and
 reports each element that exceeds `maxAllowedInlineClass`:
 
 ```

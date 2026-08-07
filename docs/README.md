@@ -22,7 +22,8 @@ scalability (if tailwind is used in it).
 
 Tailwind Auditor scans your project and flags every element whose inline class count exceeds the
 limit you set, so you always know where a `className` has grown too long to read. It also
-pre-flights your project to confirm Tailwind is actually in use.
+pre-flights your project to confirm the Tailwind toolchain (`tailwindcss`, `postcss`,
+`autoprefixer`) is actually installed.
 
 ### Quick start
 

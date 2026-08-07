@@ -50,11 +50,48 @@ function getLineEnding(source) {
 }
 
 /**
+ * Expand brace groups in a glob pattern into the list of concrete patterns
+ * they stand for. For example a js-or-jsx extension group produces one pattern
+ * per option. Handles multiple groups as a cartesian product; nested braces are
+ * not supported.
+ *
+ * @param {string} pattern
+ * @returns {string[]}
+ */
+function expandBraces(pattern) {
+  const open = pattern.indexOf('{');
+  if (open === -1) return [pattern];
+
+  const close = pattern.indexOf('}', open);
+  if (close === -1) return [pattern];
+
+  const head = pattern.slice(0, open);
+  const options = pattern
+    .slice(open + 1, close)
+    .split(',')
+    .map((option) => option.trim())
+    .filter(Boolean);
+  const tail = pattern.slice(close + 1);
+
+  if (!options.length) return [pattern];
+
+  const results = [];
+  for (const option of options) {
+    for (const expandedTail of expandBraces(tail)) {
+      results.push(head + option + expandedTail);
+    }
+  }
+  return results;
+}
+
+/**
  * Discover the files a project should be audited against.
  *
  * Returns every non-directory file under `baseDir` that is (a) not excluded by
  * `.gitignore` / `.eslintignore` / `node_modules` / `.git` and (b) matches at
- * least one `config.filesToAudit` pattern (or all files when no patterns are set).
+ * least one `config.filesToAudit` pattern (or all files when no patterns are
+ * set). Brace patterns with an extension group (for example js or jsx) are
+ * supported.
  *
  * @param {object} opts
  * @param {string} [opts.baseDir]
@@ -79,8 +116,8 @@ async function getAuditFileNames({ baseDir = process.cwd(), config = {} } = {}) 
   }
 
   const matcher = ignore();
-  matcher.add(auditPatterns);
+  matcher.add(auditPatterns.flatMap(expandBraces));
   return files.filter((file) => matcher.ignores(file));
 }
 
-module.exports = { getAuditFileNames, getLineEnding, readIgnoreFiles };
+module.exports = { getAuditFileNames, getLineEnding, readIgnoreFiles, expandBraces };

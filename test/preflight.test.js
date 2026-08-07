@@ -60,3 +60,34 @@ test('adds a note when there is no package.json at all', () => {
   assert.strictEqual(result.usingTailwind, false);
   assert.ok(result.notes.some((note) => note.includes('No package.json')));
 });
+
+test('detects postcss and autoprefixer alongside tailwindcss', () => {
+  const dir = makeProject({
+    'package.json': JSON.stringify({
+      dependencies: { tailwindcss: '^3.4.0' },
+      devDependencies: { postcss: '^8.4.0', autoprefixer: '^10.4.0' },
+    }),
+  });
+  const result = checkTailwind(dir);
+  assert.deepStrictEqual(result.packages, {
+    tailwindcss: true,
+    postcss: true,
+    autoprefixer: true,
+  });
+  assert.strictEqual(result.usingTailwind, true);
+});
+
+test('warns when postcss and autoprefixer are missing', () => {
+  const dir = makeProject({
+    'package.json': JSON.stringify({
+      dependencies: { tailwindcss: '^3.4.0' },
+      devDependencies: {},
+    }),
+  });
+  const result = checkTailwind(dir);
+  assert.strictEqual(result.packages.tailwindcss, true);
+  assert.strictEqual(result.packages.postcss, false);
+  assert.strictEqual(result.packages.autoprefixer, false);
+  assert.ok(result.notes.some((note) => note.includes('postcss')));
+  assert.ok(result.notes.some((note) => note.includes('autoprefixer')));
+});

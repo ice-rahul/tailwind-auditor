@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const TAILWIND_PACKAGE = 'tailwindcss';
+// The packages a project should have installed to make full use of Tailwind.
+const TAILWIND_PACKAGES = ['tailwindcss', 'postcss', 'autoprefixer'];
 const TAILWIND_CONFIG_NAMES = [
   'tailwind.config.js',
   'tailwind.config.cjs',
@@ -28,31 +29,44 @@ function readPackageJson(baseDir) {
 /**
  * Check whether a project looks like a Tailwind project (roadmap items 1 & 2).
  *
- * Warns, but does not block, when Tailwind cannot be confirmed — a project may
- * still be worth auditing.
+ * Verifies the presence of the expected packages (`tailwindcss`, `postcss`,
+ * `autoprefixer`) and a Tailwind config file. Warns, but does not block, when
+ * something is missing — a project may still be worth auditing.
  *
  * @param {string} [baseDir]
- * @returns {{ usingTailwind: boolean, tailwindConfigFile: string | null, notes: string[] }}
+ * @returns {{
+ *   packages: Record<string, boolean>,
+ *   usingTailwind: boolean,
+ *   tailwindConfigFile: string | null,
+ *   notes: string[],
+ * }}
  */
 function checkTailwind(baseDir = process.cwd()) {
   const pkg = readPackageJson(baseDir);
   const deps = pkg ? { ...pkg.dependencies, ...pkg.devDependencies } : {};
-  const usingTailwind = Object.prototype.hasOwnProperty.call(deps, TAILWIND_PACKAGE);
+  const notes = [];
+
+  const packages = Object.fromEntries(
+    TAILWIND_PACKAGES.map((name) => [name, Object.prototype.hasOwnProperty.call(deps, name)])
+  );
+
+  if (!pkg) {
+    notes.push('No package.json found — could not verify the project uses Tailwind.');
+  } else {
+    for (const name of TAILWIND_PACKAGES) {
+      if (!packages[name]) {
+        notes.push(`${name} was not found in package.json dependencies/devDependencies.`);
+      }
+    }
+  }
 
   const tailwindConfigFile =
     TAILWIND_CONFIG_NAMES.find((name) => fs.existsSync(path.join(baseDir, name))) || null;
-
-  const notes = [];
-  if (!pkg) {
-    notes.push('No package.json found — could not verify the project uses Tailwind.');
-  } else if (!usingTailwind) {
-    notes.push('tailwindcss was not found in package.json dependencies/devDependencies.');
-  }
   if (!tailwindConfigFile) {
     notes.push('No Tailwind config file (tailwind.config.{js,cjs,mjs,ts}) found.');
   }
 
-  return { usingTailwind, tailwindConfigFile, notes };
+  return { packages, usingTailwind: packages.tailwindcss, tailwindConfigFile, notes };
 }
 
 module.exports = { checkTailwind, readPackageJson };
